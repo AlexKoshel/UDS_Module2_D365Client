@@ -18,8 +18,8 @@ namespace UDS_Module2_D365Client
             var service = new CrmServiceClient(connectionString);
 
             cr9d3_rent rent = new cr9d3_rent();
-            rent.cr9d3_reserved_pickup = RadmonValues.GetRandomPickUpDay();
-
+            rent.cr9d3_reserved_pickup = RadmonValues.GetPickUpDate();
+            rent.cr9d3_reserved_handover = RadmonValues.GetHandoverDay(rent.GetAttributeValue<DateTime>("cr9d3_reserved_pickup"));
             service.Create(rent);
 
             Console.WriteLine("Done");
