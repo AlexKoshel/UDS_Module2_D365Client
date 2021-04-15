@@ -11,7 +11,7 @@ namespace UDS_Module2_D365Client.Services
 {
     public class RadmonValues
     {
-        public static Guid GetCarClass(CrmServiceClient service)
+        public static EntityReference GetCarClass(CrmServiceClient service)
         {
             var query = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
               <entity name='cr9d3_carclass'>
@@ -26,12 +26,9 @@ namespace UDS_Module2_D365Client.Services
                 </filter>
               </entity>
             </fetch>";
-            var carClass = service.RetrieveMultiple(new FetchExpression(query));
-
-            Random gen = new Random();
-
-            var car = carClass[new Random().Next(0, carClass.Entities.Count)];           
-            return car.
+            var carClass = service.RetrieveMultiple(new FetchExpression(query));             
+            var car = carClass[new Random().Next(0, carClass.Entities.Count)];
+            return new EntityReference(car.LogicalName,car.Id);
         }
 
 
