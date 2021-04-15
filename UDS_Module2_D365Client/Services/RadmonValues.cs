@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +10,31 @@ using System.Threading.Tasks;
 namespace UDS_Module2_D365Client.Services
 {
     public class RadmonValues
-    {     
+    {
+        public static Guid GetCarClass(CrmServiceClient service)
+        {
+            var query = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+              <entity name='cr9d3_carclass'>
+                <attribute name='cr9d3_classcode' />
+                <attribute name='createdon' />
+                <attribute name='cr9d3_price' />
+                <attribute name='cr9d3_classdescription' />
+                <attribute name='cr9d3_carclassid' />
+                <order attribute='cr9d3_classcode' descending='false' />
+                <filter type='and'>
+                  <condition attribute='statecode' operator='eq' value='0' />
+                </filter>
+              </entity>
+            </fetch>";
+            var carClass = service.RetrieveMultiple(new FetchExpression(query));
+
+            Random gen = new Random();
+
+            var car = carClass[new Random().Next(0, carClass.Entities.Count)];           
+            return car.
+        }
+
+
         public static DateTime GetPickUpDate()
         {
             Random gen = new Random();
