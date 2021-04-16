@@ -26,11 +26,11 @@ namespace UDS_Module2_D365Client.Services
                 </filter>
               </entity>
             </fetch>";
-            var carClass = service.RetrieveMultiple(new FetchExpression(query));
-            var rdmClass = carClass[new Random().Next(0, carClass.Entities.Count)];
-            var Clas = new EntityReference(rdmClass.LogicalName, rdmClass.Id);
-            Clas.Name = rdmClass.GetAttributeValue<string>("cr9d3_classcode"); 
-            return Clas;
+            var carClassesFromClassList = service.RetrieveMultiple(new FetchExpression(query));
+            var randomClassFromClassList = carClassesFromClassList[new Random().Next(0, carClassesFromClassList.Entities.Count)];
+            var randomClassFromClassListReference = new EntityReference(randomClassFromClassList.LogicalName, randomClassFromClassList.Id);
+            randomClassFromClassListReference.Name = randomClassFromClassList.GetAttributeValue<string>("cr9d3_classcode"); 
+            return randomClassFromClassListReference;
         }
 
         public static DateTime GetPickUpDate()
@@ -66,9 +66,30 @@ namespace UDS_Module2_D365Client.Services
                     $"</filter>" +
                 $"</entity>" +
             $"</fetch>";
-            var cars = service.RetrieveMultiple(new FetchExpression(query));
-            var rdmCar = cars[new Random().Next(0, cars.Entities.Count)];
-           return new EntityReference(rdmCar.LogicalName, rdmCar.Id);
+            var carsFromClass = service.RetrieveMultiple(new FetchExpression(query));
+            var randomCarFromClass = carsFromClass[new Random().Next(0, carsFromClass.Entities.Count)];
+            return new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
+        }
+
+        public static EntityReference GetRdmCustomer(CrmServiceClient service)
+        {
+            var query = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+              <entity name='contact'>
+                <attribute name='fullname' />
+                <attribute name='parentcustomerid' />
+                <attribute name='telephone1' />
+                <attribute name='emailaddress1' />
+                <attribute name='contactid' />
+                <order attribute='fullname' descending='false' />
+                <filter type='and'>
+                  <condition attribute='statecode' operator='eq' value='0' />
+                </filter>
+              </entity>
+            </fetch>";
+
+            var customers = service.RetrieveMultiple(new FetchExpression(query));
+            var rdmCustomers = customers[new Random().Next(0, customers.Entities.Count)];
+            return new EntityReference(rdmCustomers.LogicalName, rdmCustomers.Id);
         }
     }
 }

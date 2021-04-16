@@ -25,6 +25,8 @@ namespace UDS_Module2_D365Client
             var carClas = rent.cr9d3_car_class.Name.ToString();
             var carClasId = rent.cr9d3_car_class.Id.ToString();
             rent.cr9d3_car = RandomValues.GetRdmCar(service, carClas, carClasId);
+            rent.cr9d3_customer = RandomValues.GetRdmCustomer(service);
+            rent.cr9d3_pickup_location=new Random().Next(0, 3
 
             service.Create(rent);
 
