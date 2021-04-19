@@ -91,5 +91,30 @@ namespace UDS_Module2_D365Client.Services
             var rdmCustomers = customers[new Random().Next(0, customers.Entities.Count)];
             return new EntityReference(rdmCustomers.LogicalName, rdmCustomers.Id);
         }
+
+        public static int? GetRdmStatusValue()
+        {
+            List<Tuple<double, int>> allStacusValue = new List<Tuple<double, int>>();
+            allStacusValue.Add(new Tuple<double, int>(0.05, 1));
+            allStacusValue.Add(new Tuple<double, int>(0.05, 970300000));
+            allStacusValue.Add(new Tuple<double, int>(0.05, 970300001));
+            allStacusValue.Add(new Tuple<double, int>(0.1, 970300002));
+            allStacusValue.Add(new Tuple<double, int>(0.75, 2));
+
+            var random = new Random();
+            var diceRoll = random.NextDouble();
+
+            var cumulative = 0.0;
+
+            for (var i = 0; i < allStacusValue.Count; i++)
+            {
+                cumulative += allStacusValue[i].Item1;
+                if (diceRoll < cumulative)
+                {
+                   return allStacusValue[i].Item2;                   
+                }
+            }
+            return null ;
+        }
     }
 }
