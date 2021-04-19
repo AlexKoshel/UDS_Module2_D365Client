@@ -15,11 +15,12 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var statusCode = RandomValues.GetRdmStatusValue();
+            var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
 
-            var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);                    
-                               
             cr9d3_rent rent = new cr9d3_rent();
+
+            
+            
             rent.cr9d3_reserved_pickup = RandomValues.GetPickUpDate();
             var pickupDate = rent.cr9d3_reserved_pickup;
             rent.cr9d3_reserved_handover = RandomValues.GetHandoverDay((DateTime)pickupDate);
@@ -33,12 +34,14 @@ namespace UDS_Module2_D365Client
             rent.cr9d3_pickup_location = new OptionSetValue(new Random().Next(0, 2));
             rent.cr9d3_return_location = new OptionSetValue(new Random().Next(0, 2));
 
-            if (!StatusCodeIsActive((int)statusCode))
+            var statusCode = RandomValues.GetRdmStatusReasonValue();
+            if (!StatusCodeIsActive(statusCode))
             {
                 rent.statecode = cr9d3_rentState.Inactive;
-            }                   
+            }
 
-            rent.statuscode = new OptionSetValue((int)statusCode);
+            rent.statuscode = new OptionSetValue(statusCode);
+
 
             service.Create(rent);
 
@@ -52,5 +55,6 @@ namespace UDS_Module2_D365Client
         {
             return ((statusCode == 1) || (statusCode == 970300000) || (statusCode == 970300001));            
         }
+        
     }
 }

@@ -92,17 +92,36 @@ namespace UDS_Module2_D365Client.Services
             return new EntityReference(rdmCustomers.LogicalName, rdmCustomers.Id);
         }
 
-        public static int? GetRdmStatusValue()
+        public static int GetRdmStatusReasonValue()
         {
-            List<Tuple<double, int>> allStacusValue = new List<Tuple<double, int>>();
-            allStacusValue.Add(new Tuple<double, int>(0.05, 1));
-            allStacusValue.Add(new Tuple<double, int>(0.05, 970300000));
-            allStacusValue.Add(new Tuple<double, int>(0.05, 970300001));
-            allStacusValue.Add(new Tuple<double, int>(0.1, 970300002));
-            allStacusValue.Add(new Tuple<double, int>(0.75, 2));
-
             var random = new Random();
             var diceRoll = random.NextDouble();
+
+            if (diceRoll <= 0.05) return GetRdmActiveStatusValue();
+            return (int)GetRdmDeactiveStatusValue(diceRoll);            
+        }
+
+        private static int GetRdmActiveStatusValue()
+        {
+            List<Tuple<double, int>> ActiveStacusValue = new List<Tuple<double, int>>();
+            {
+                ActiveStacusValue.Add(new Tuple<double, int>(0.05, 1));
+                ActiveStacusValue.Add(new Tuple<double, int>(0.05, 970300000));
+                ActiveStacusValue.Add(new Tuple<double, int>(0.05, 970300001));
+            }
+
+            var random = new Random();
+
+            var rdmActiveStatusValue = ActiveStacusValue[new Random().Next(0, ActiveStacusValue.Count)];
+            return rdmActiveStatusValue.Item2;
+
+        }
+
+        private static int? GetRdmDeactiveStatusValue(double diceRoll)
+        {
+            List<Tuple<double, int>> allStacusValue = new List<Tuple<double, int>>();
+            allStacusValue.Add(new Tuple<double, int>(0.1, 970300002));
+            allStacusValue.Add(new Tuple<double, int>(0.75, 2));
 
             var cumulative = 0.0;
 
@@ -111,10 +130,10 @@ namespace UDS_Module2_D365Client.Services
                 cumulative += allStacusValue[i].Item1;
                 if (diceRoll < cumulative)
                 {
-                   return allStacusValue[i].Item2;                   
+                    return allStacusValue[i].Item2;
                 }
             }
-            return null ;
+            return null;
         }
     }
 }
