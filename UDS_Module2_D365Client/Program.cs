@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Tooling.Connector;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var maxRecords = 100;
+            var maxRecords = 1;
 
             for (int i = 0; i < maxRecords; i++)
             {
@@ -31,7 +32,8 @@ namespace UDS_Module2_D365Client
                 var carClas = rent.cr9d3_car_class.Name.ToString();
                 var carClasId = rent.cr9d3_car_class.Id.ToString();
                 rent.cr9d3_car = RandomValues.GetRdmCar(service, carClas, carClasId);
-
+                var carName = rent.cr9d3_car.Name;
+                var carValue = rent.cr9d3_car.Id;
                 rent.cr9d3_customer = RandomValues.GetRdmCustomer(service);
                 rent.cr9d3_pickup_location = new OptionSetValue(new Random().Next(0, 2));
                 rent.cr9d3_return_location = new OptionSetValue(new Random().Next(0, 2));
@@ -42,8 +44,20 @@ namespace UDS_Module2_D365Client
                 }
 
                 rent.statuscode = new OptionSetValue( RandomValues.GetRdmStatusReasonValue(i));
+                
+                var pickupReport = new cr9d3_cartransferreport();
 
-                service.Create(rent);
+                pickupReport.cr9d3_car = rent.cr9d3_car;
+                pickupReport.cr9d3_date = pickupDate;
+                service.Create(pickupReport);
+
+                                
+                CrmRequests.GetPickupReport(service,carName, carValue, (DateTime)pickupDate); //need tests
+
+                //service.Create(rent);          
+
+
+
 
             }
 

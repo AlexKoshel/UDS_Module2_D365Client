@@ -57,6 +57,7 @@
     <Compile Include="CRMData\D365Context.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CrmRequests.cs" />
     <Compile Include="Services\RandomValues.cs" />
   </ItemGroup>
   <ItemGroup>

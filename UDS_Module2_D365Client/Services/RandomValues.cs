@@ -36,10 +36,12 @@ namespace UDS_Module2_D365Client.Services
         public static DateTime GetPickUpDate()
         {
             Random gen = new Random();
-            var start = new DateTime(2019, 1, 1);
-            var endDate = new DateTime(2020, 12, 31);
-            int range = (endDate - start).Days;
-            return start.AddDays(gen.Next(range));
+            var start = new DateTime(2019, 1, 1, 0,0,0);
+            var endDate = new DateTime(2020, 12, 31, 0, 0, 0 );
+            TimeSpan range = start - endDate;
+            var randts = new TimeSpan((long)(gen.NextDouble() * range.Ticks));
+            return start + randts;
+            //return start.AddDays(gen.Next(range));
         }
 
         public static DateTime GetHandoverDay(DateTime pickUpDate)
@@ -68,7 +70,9 @@ namespace UDS_Module2_D365Client.Services
             $"</fetch>";
             var carsFromClass = service.RetrieveMultiple(new FetchExpression(query));
             var randomCarFromClass = carsFromClass[new Random().Next(0, carsFromClass.Entities.Count)];
-            return new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
+            var rdmCar = new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
+            rdmCar.Name = randomCarFromClass.GetAttributeValue<string>("cr9d3_vinnumber");
+            return rdmCar;
         }
 
         public static EntityReference GetRdmCustomer(CrmServiceClient service)
