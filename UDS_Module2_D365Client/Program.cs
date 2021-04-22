@@ -27,7 +27,6 @@ namespace UDS_Module2_D365Client
                 rent.cr9d3_reserved_pickup = RandomValues.GetPickUpDate();
                 var pickupDate = rent.cr9d3_reserved_pickup;
                 rent.cr9d3_reserved_handover = RandomValues.GetHandoverDay((DateTime)pickupDate);
-
                 rent.cr9d3_car_class = RandomValues.GetCarClass(service);
                 var carClas = rent.cr9d3_car_class.Name.ToString();
                 var carClasId = rent.cr9d3_car_class.Id.ToString();
@@ -43,15 +42,14 @@ namespace UDS_Module2_D365Client
                     rent.statecode = cr9d3_rentState.Inactive;
                 }
 
-                rent.statuscode = new OptionSetValue( RandomValues.GetRdmStatusReasonValue(i));
+                rent.statuscode = new OptionSetValue(RandomValues.GetRdmStatusReasonValue(i));
                 
                 var pickupReport = new cr9d3_cartransferreport();
 
                 pickupReport.cr9d3_car = rent.cr9d3_car;
                 pickupReport.cr9d3_date = pickupDate;
                 service.Create(pickupReport);
-
-                                
+                                                
                 CrmRequests.GetPickupReport(service,carName, carValue, (DateTime)pickupDate); //need tests
 
                 //service.Create(rent);          
