@@ -16,7 +16,7 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var maxRecords = 1;
+            var maxRecords = 15;
 
             for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
             {
@@ -44,14 +44,14 @@ namespace UDS_Module2_D365Client
                 }
 
                 rent.statuscode = new OptionSetValue(RandomValues.GetRandomStatusReasonValue(recordNumber));
+                var statusReason = rent.statuscode;
+
+                if (statusReason.Value == 970300001) CreatePickUpReport(service, rent, recordNumber); 
                 
-                var pickupReport = new cr9d3_cartransferreport();
 
-                pickupReport.cr9d3_car = rent.cr9d3_car;
-                pickupReport.cr9d3_date = pickupDate;
-                service.Create(pickupReport);
 
-                                
+
+
                 CrmRequests.GetPickupReport(service,carName, carValue, (DateTime)pickupDate); //need tests
 
                 //service.Create(rent);          
@@ -70,9 +70,18 @@ namespace UDS_Module2_D365Client
             return (recordNumber <= 14);         
         }
 
-        private static void CreatePickUpReport(CrmServiceClient crmService, cr9d3_rent rent, int recordNumber)
+        private static void CreatePickUpReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
         {
+            var pickupReport = new cr9d3_cartransferreport();
 
+            pickupReport.cr9d3_car = rent.cr9d3_car;
+            pickupReport.cr9d3_date = rent.cr9d3_reserved_pickup;
+            if ((recordNumber >= 10) && (recordNumber <= 12))
+            {
+                pickupReport.cr9d3_damages = true;
+                pickupReport.cr9d3_damagedescription = "damage";
+            }
+            cervice.Create(pickupReport);
         }
         
         
