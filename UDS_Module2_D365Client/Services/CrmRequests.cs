@@ -32,7 +32,7 @@ namespace UDS_Module2_D365Client.Services
             var pickupReports = service.RetrieveMultiple(new FetchExpression(query));
             foreach (var pickupReport in pickupReports.Entities)
             {
-                var reportDate = pickupReport.Attributes["cr9d3_date"].ToString(); //need tests
+                var reportDate = pickupReport.Attributes["cr9d3_date"].ToString(); 
                 if (reportDate == carPickUpDate)
                 {
                     Console.WriteLine("Helo");

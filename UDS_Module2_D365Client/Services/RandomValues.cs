@@ -2,10 +2,6 @@
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Tooling.Connector;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UDS_Module2_D365Client.Services
 {
@@ -35,23 +31,22 @@ namespace UDS_Module2_D365Client.Services
 
         public static DateTime GetPickUpDate()
         {
-            Random gen = new Random();
-            var start = new DateTime(2019, 1, 1, 0,0,0);
+            Random random = new Random();
+            var startDate = new DateTime(2019, 1, 1, 0,0,0);
             var endDate = new DateTime(2020, 12, 31, 0, 0, 0 );
-            TimeSpan range = start - endDate;
-            var randts = new TimeSpan((long)(gen.NextDouble() * range.Ticks));
-            return start + randts;
-            //return start.AddDays(gen.Next(range));
+            TimeSpan range = startDate - endDate;
+            var randts = new TimeSpan((long)(random.NextDouble() * range.Ticks));
+            return startDate + randts;
         }
 
         public static DateTime GetHandoverDay(DateTime pickUpDate)
         {
-            Random gen = new Random();
-            double range = gen.Next(1,30);
+            Random random = new Random();
+            double range = random.Next(1,30);
             return pickUpDate.AddDays(range);
         }
 
-        public static EntityReference GetRdmCar(CrmServiceClient service, string clasName, string carClasId)
+        public static EntityReference GetRandomCar(CrmServiceClient service, string clasName, string carClasId)
         {            
             var query = $"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>" +
                 $"<entity name='cr9d3_car'>" +
@@ -70,12 +65,12 @@ namespace UDS_Module2_D365Client.Services
             $"</fetch>";
             var carsFromClass = service.RetrieveMultiple(new FetchExpression(query));
             var randomCarFromClass = carsFromClass[new Random().Next(0, carsFromClass.Entities.Count)];
-            var rdmCar = new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
-            rdmCar.Name = randomCarFromClass.GetAttributeValue<string>("cr9d3_vinnumber");
-            return rdmCar;
+            var randomCar = new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
+            randomCar.Name = randomCarFromClass.GetAttributeValue<string>("cr9d3_vinnumber");
+            return randomCar;
         }
 
-        public static EntityReference GetRdmCustomer(CrmServiceClient service)
+        public static EntityReference GetRandomCustomer(CrmServiceClient service)
         {
             var query = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
               <entity name='contact'>
@@ -92,11 +87,11 @@ namespace UDS_Module2_D365Client.Services
             </fetch>";
 
             var customers = service.RetrieveMultiple(new FetchExpression(query));
-            var rdmCustomers = customers[new Random().Next(0, customers.Entities.Count)];
-            return new EntityReference(rdmCustomers.LogicalName, rdmCustomers.Id);
+            var randomCustomer = customers[new Random().Next(0, customers.Entities.Count)];
+            return new EntityReference(randomCustomer.LogicalName, randomCustomer.Id);
         }
 
-        public static int GetRdmStatusReasonValue(int recordNumber)
+        public static int GetRandomStatusReasonValue(int recordNumber)
         {
             if (recordNumber <= 4)
             {
@@ -118,7 +113,6 @@ namespace UDS_Module2_D365Client.Services
                 return 970300002;
             }
             return 2;
-
         }
     }
 }

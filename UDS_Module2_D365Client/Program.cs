@@ -31,10 +31,10 @@ namespace UDS_Module2_D365Client
                 rent.cr9d3_car_class = RandomValues.GetCarClass(service);
                 var carClas = rent.cr9d3_car_class.Name.ToString();
                 var carClasId = rent.cr9d3_car_class.Id.ToString();
-                rent.cr9d3_car = RandomValues.GetRdmCar(service, carClas, carClasId);
+                rent.cr9d3_car = RandomValues.GetRandomCar(service, carClas, carClasId);
                 var carName = rent.cr9d3_car.Name;
                 var carValue = rent.cr9d3_car.Id;
-                rent.cr9d3_customer = RandomValues.GetRdmCustomer(service);
+                rent.cr9d3_customer = RandomValues.GetRandomCustomer(service);
                 rent.cr9d3_pickup_location = new OptionSetValue(new Random().Next(0, 2));
                 rent.cr9d3_return_location = new OptionSetValue(new Random().Next(0, 2));
 
@@ -43,7 +43,7 @@ namespace UDS_Module2_D365Client
                     rent.statecode = cr9d3_rentState.Inactive;
                 }
 
-                rent.statuscode = new OptionSetValue( RandomValues.GetRdmStatusReasonValue(i));
+                rent.statuscode = new OptionSetValue( RandomValues.GetRandomStatusReasonValue(i));
                 
                 var pickupReport = new cr9d3_cartransferreport();
 
@@ -67,7 +67,7 @@ namespace UDS_Module2_D365Client
 
         private static bool StatusCodeIsActive(int recordNumber)
         {
-            return (recordNumber <= 14);            //-1    
+            return (recordNumber <= 14);         
         }
         
         
