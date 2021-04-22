@@ -16,17 +16,18 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var maxRecords = ;
+            var maxRecords = 100;
+            var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
 
             for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
-            {
-                var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
+            {               
 
                 cr9d3_rent rent = new cr9d3_rent();
 
                 rent.cr9d3_reserved_pickup = RandomValues.GetPickUpDate();
                 var pickupDate = rent.cr9d3_reserved_pickup;
                 rent.cr9d3_reserved_handover = RandomValues.GetHandoverDay((DateTime)pickupDate);
+                var handoverDate = rent.cr9d3_reserved_handover;
 
                 rent.cr9d3_car_class = RandomValues.GetCarClass(service);
                 var carClas = rent.cr9d3_car_class.Name.ToString();
@@ -53,14 +54,11 @@ namespace UDS_Module2_D365Client
                     CreateReturnReport(service, rent, recordNumber);
                 }
 
-                rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, pickupDate);           
-                                
-
-                service.Create(rent);      
+                rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, pickupDate, "Pickup");
+                rent.cr9d3_return_report = CrmRequests.GetPickupReport(service, carName, carValue, handoverDate, "Return");
 
 
-
-
+                service.Create(rent);
             }
 
             Console.WriteLine("Done");
@@ -74,29 +72,33 @@ namespace UDS_Module2_D365Client
 
         private static void CreatePickUpReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
         {
-            var pickupReport = new cr9d3_cartransferreport();
+            var pickupReport = new cr9d3_cartransferreport
+            {
+                cr9d3_type = new OptionSetValue(970300001),
+                cr9d3_car = rent.cr9d3_car,
+                cr9d3_date = rent.cr9d3_reserved_pickup
+            };
 
-            pickupReport.cr9d3_type = new OptionSetValue(970300001);
-            pickupReport.cr9d3_car = rent.cr9d3_car;
-            pickupReport.cr9d3_date = rent.cr9d3_reserved_pickup;           
 
-            
             cervice.Create(pickupReport);
         }
 
         private static void CreateReturnReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
         {
-            var returnReport = new cr9d3_cartransferreport();
+            var returnReport = new cr9d3_cartransferreport
+            {
+                cr9d3_type = new OptionSetValue(970300000),
+                cr9d3_car = rent.cr9d3_car,
+                cr9d3_date = rent.cr9d3_reserved_handover
+            };
 
-            returnReport.cr9d3_type = new OptionSetValue(970300000);
-            returnReport.cr9d3_car = rent.cr9d3_car;
-            returnReport.cr9d3_date = rent.cr9d3_reserved_handover;
-
-            if ((recordNumber >= 10) && (recordNumber <= 12))
+            if ((recordNumber >= 0) && (recordNumber <= 120))
             {
                 returnReport.cr9d3_damages = true;
                 returnReport.cr9d3_damagedescription = "damage";
             }
+
+            cervice.Create(returnReport);
         }
 
 

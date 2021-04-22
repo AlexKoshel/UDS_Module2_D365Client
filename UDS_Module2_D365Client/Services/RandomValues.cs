@@ -22,6 +22,7 @@ namespace UDS_Module2_D365Client.Services
                 </filter>
               </entity>
             </fetch>";
+
             var carClassesFromClassList = service.RetrieveMultiple(new FetchExpression(query));
             var randomClassFromClassList = carClassesFromClassList[new Random().Next(0, carClassesFromClassList.Entities.Count)];
             var randomClassFromClassListReference = new EntityReference(randomClassFromClassList.LogicalName, randomClassFromClassList.Id);
@@ -63,6 +64,7 @@ namespace UDS_Module2_D365Client.Services
                     $"</filter>" +
                 $"</entity>" +
             $"</fetch>";
+
             var carsFromClass = service.RetrieveMultiple(new FetchExpression(query));
             var randomCarFromClass = carsFromClass[new Random().Next(0, carsFromClass.Entities.Count)];
             var randomCar = new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);

@@ -2,19 +2,26 @@
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Tooling.Connector;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UDS_Module2_D365Client.Services
 {
     public class CrmRequests
     {
-        public static EntityReference GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime? pickUpDate)
+        public static EntityReference GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime? requiredDate, string reportType)
         {
-            var carPickUpDate = pickUpDate.ToString();
-            
+            var reportTypeValue = 0;
+            var reportRequiredDate = requiredDate.ToString();
+
+            switch (reportType)
+            {
+                case "Return":
+                    reportTypeValue = 970300000;
+                    break;
+                default:
+                    reportTypeValue = 970300001;
+                    break;
+            }            
+                        
             var query = $"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>" +
                             $"<entity name='cr9d3_cartransferreport'>" +
                                 $"<attribute name='cr9d3_type' />" +
@@ -26,16 +33,17 @@ namespace UDS_Module2_D365Client.Services
                                 $"<order attribute='cr9d3_type' descending='false' />" +
                                     $"<filter type='and'>" +
                                         $"<condition attribute='cr9d3_car' operator='eq' uiname='{carName}' uitype='cr9d3_car' value='{carValue}' />" +
+                                        $"<condition attribute='cr9d3_type' operator='eq' value='{reportTypeValue}' />" +
                                     $"</filter>" +
                             $"</entity>" +
                         $"</fetch>";
-            var pickupReports = service.RetrieveMultiple(new FetchExpression(query));
-            foreach (var pickupReport in pickupReports.Entities)
-            {
-                var reportDate = pickupReport.Attributes["cr9d3_date"].ToString(); 
-                if (reportDate == carPickUpDate) return new EntityReference(pickupReport.LogicalName, pickupReport.Id);
-            }
 
+            var requiredReports = service.RetrieveMultiple(new FetchExpression(query));
+            foreach (var report in requiredReports.Entities)
+            {
+                var reportDate = report.Attributes["cr9d3_date"].ToString();
+                if (reportDate == reportRequiredDate) return new EntityReference(report.LogicalName, report.Id);
+            }
             return null;
         }
     }
