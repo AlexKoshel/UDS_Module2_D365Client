@@ -18,7 +18,7 @@ namespace UDS_Module2_D365Client
         {
             var maxRecords = 1;
 
-            for (int i = 0; i < maxRecords; i++)
+            for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
             {
                 var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
 
@@ -38,12 +38,12 @@ namespace UDS_Module2_D365Client
                 rent.cr9d3_pickup_location = new OptionSetValue(new Random().Next(0, 2));
                 rent.cr9d3_return_location = new OptionSetValue(new Random().Next(0, 2));
 
-                if (!StatusCodeIsActive(i))
+                if (!StatusCodeIsActive(recordNumber))
                 {
                     rent.statecode = cr9d3_rentState.Inactive;
                 }
 
-                rent.statuscode = new OptionSetValue( RandomValues.GetRandomStatusReasonValue(i));
+                rent.statuscode = new OptionSetValue(RandomValues.GetRandomStatusReasonValue(recordNumber));
                 
                 var pickupReport = new cr9d3_cartransferreport();
 
@@ -68,6 +68,11 @@ namespace UDS_Module2_D365Client
         private static bool StatusCodeIsActive(int recordNumber)
         {
             return (recordNumber <= 14);         
+        }
+
+        private static void CreatePickUpReport(CrmServiceClient crmService, cr9d3_rent rent, int recordNumber)
+        {
+
         }
         
         
