@@ -11,7 +11,7 @@ namespace UDS_Module2_D365Client.Services
 {
     public class CrmRequests
     {
-        public static void GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime pickUpDate)
+        public static EntityReference GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime? pickUpDate)
         {
             var carPickUpDate = pickUpDate.ToString();
             
@@ -33,13 +33,10 @@ namespace UDS_Module2_D365Client.Services
             foreach (var pickupReport in pickupReports.Entities)
             {
                 var reportDate = pickupReport.Attributes["cr9d3_date"].ToString(); 
-                if (reportDate == carPickUpDate)
-                {
-                    Console.WriteLine("Helo");
-                }
+                if (reportDate == carPickUpDate) return new EntityReference(pickupReport.LogicalName, pickupReport.Id);
             }
-            
-            //return new EntityReference(carForReport.LogicalName, carForReport.Id);
+
+            return null;
         }
     }
 }

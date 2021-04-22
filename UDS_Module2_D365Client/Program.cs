@@ -16,7 +16,7 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var maxRecords = 15;
+            var maxRecords = ;
 
             for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
             {
@@ -46,15 +46,17 @@ namespace UDS_Module2_D365Client
                 rent.statuscode = new OptionSetValue(RandomValues.GetRandomStatusReasonValue(recordNumber));
                 var statusReason = rent.statuscode;
 
-                if (statusReason.Value == 970300001) CreatePickUpReport(service, rent, recordNumber); 
-                
+                if (statusReason.Value == 970300001) CreatePickUpReport(service, rent, recordNumber);
+                if (statusReason.Value == 2) 
+                {
+                    CreatePickUpReport(service, rent, recordNumber);
+                    CreateReturnReport(service, rent, recordNumber);
+                }
 
+                rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, pickupDate);           
+                                
 
-
-
-                CrmRequests.GetPickupReport(service,carName, carValue, (DateTime)pickupDate); //need tests
-
-                //service.Create(rent);          
+                service.Create(rent);      
 
 
 
@@ -74,17 +76,31 @@ namespace UDS_Module2_D365Client
         {
             var pickupReport = new cr9d3_cartransferreport();
 
+            pickupReport.cr9d3_type = new OptionSetValue(970300001);
             pickupReport.cr9d3_car = rent.cr9d3_car;
-            pickupReport.cr9d3_date = rent.cr9d3_reserved_pickup;
-            if ((recordNumber >= 10) && (recordNumber <= 12))
-            {
-                pickupReport.cr9d3_damages = true;
-                pickupReport.cr9d3_damagedescription = "damage";
-            }
+            pickupReport.cr9d3_date = rent.cr9d3_reserved_pickup;           
+
+            
             cervice.Create(pickupReport);
         }
-        
-        
+
+        private static void CreateReturnReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
+        {
+            var returnReport = new cr9d3_cartransferreport();
+
+            returnReport.cr9d3_type = new OptionSetValue(970300000);
+            returnReport.cr9d3_car = rent.cr9d3_car;
+            returnReport.cr9d3_date = rent.cr9d3_reserved_handover;
+
+            if ((recordNumber >= 10) && (recordNumber <= 12))
+            {
+                returnReport.cr9d3_damages = true;
+                returnReport.cr9d3_damagedescription = "damage";
+            }
+        }
+
+
+
 
     }
 }
