@@ -61,8 +61,10 @@ namespace UDS_Module2_D365Client
 
                 rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, (DateTime)pickupDate, "Pickup");
                 rent.cr9d3_return_report = CrmRequests.GetPickupReport(service, carName, carValue, (DateTime)handoverDate, "Return");
+                rent.cr9d3_paid = IsNotPaid(statusReason,recordNumber);
 
                 service.Create(rent);
+                Console.WriteLine($"Create record № {recordNumber+1}");
             }
 
             Console.WriteLine("Done");
@@ -82,8 +84,6 @@ namespace UDS_Module2_D365Client
                 cr9d3_car = rent.cr9d3_car,
                 cr9d3_date = rent.cr9d3_reserved_pickup
             };
-
-
             service.Create(pickupReport);
         }
 
@@ -101,8 +101,27 @@ namespace UDS_Module2_D365Client
                 returnReport.cr9d3_damages = true;
                 returnReport.cr9d3_damagedescription = "damage";
             }
-
             service.Create(returnReport);
         }
+
+        private static bool IsNotPaid(OptionSetValue statusReasonValue, int recordNumber)
+        {
+            if((statusReasonValue.Value == 970300000) && (recordNumber>=4) &&(recordNumber<=7))
+            {
+                return false;
+            }
+
+            if ((statusReasonValue.Value == 970300001) && (recordNumber >= 10) && (recordNumber <= 12))
+            {
+                return false;
+            }
+
+            if ((statusReasonValue.Value == 2) && (recordNumber >= 40) && (recordNumber <= 50))
+            {
+                return false;
+            }
+
+            return true;
+        }        
     }
 }
