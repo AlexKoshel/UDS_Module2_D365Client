@@ -7,7 +7,7 @@ namespace UDS_Module2_D365Client.Services
 {
     public class CrmRequests
     {
-        public static EntityReference GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime? requiredDate, string reportType)
+        public static EntityReference GetPickupReport(CrmServiceClient service, string carName, Guid carValue, DateTime requiredDate, string reportType)
         {
             var reportTypeValue = 0;
             var reportRequiredDate = requiredDate.ToString();
@@ -39,10 +39,14 @@ namespace UDS_Module2_D365Client.Services
                         $"</fetch>";
 
             var requiredReports = service.RetrieveMultiple(new FetchExpression(query));
+
             foreach (var report in requiredReports.Entities)
             {
-                var reportDate = report.Attributes["cr9d3_date"].ToString();
-                if (reportDate == reportRequiredDate) return new EntityReference(report.LogicalName, report.Id);
+                var reportDate = report.GetAttributeValue<DateTime>("cr9d3_date").ToString();
+                if (reportDate == reportRequiredDate)
+                {
+                    return new EntityReference(report.LogicalName, report.Id);
+                }
             }
             return null;
         }

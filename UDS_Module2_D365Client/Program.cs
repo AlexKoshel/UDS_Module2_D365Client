@@ -17,6 +17,7 @@ namespace UDS_Module2_D365Client
         static void Main(string[] args)
         {
             var maxRecords = 100;
+            var statusReasonValue = 0;
             var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
 
             for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
@@ -43,20 +44,23 @@ namespace UDS_Module2_D365Client
                 {
                     rent.statecode = cr9d3_rentState.Inactive;
                 }
-
-                rent.statuscode = new OptionSetValue(RandomValues.GetRandomStatusReasonValue(recordNumber));
+                statusReasonValue = RandomValues.GetRandomStatusReasonValue(recordNumber);
+                rent.statuscode = new OptionSetValue(statusReasonValue);
                 var statusReason = rent.statuscode;
 
-                if (statusReason.Value == 970300001) CreatePickUpReport(service, rent, recordNumber);
+                if (statusReason.Value == 970300001)
+                {
+                    CreatePickUpReport(service, rent, recordNumber);
+                }
+
                 if (statusReason.Value == 2) 
                 {
                     CreatePickUpReport(service, rent, recordNumber);
                     CreateReturnReport(service, rent, recordNumber);
                 }
 
-                rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, pickupDate, "Pickup");
-                rent.cr9d3_return_report = CrmRequests.GetPickupReport(service, carName, carValue, handoverDate, "Return");
-
+                rent.cr9d3_pickup_report = CrmRequests.GetPickupReport(service, carName, carValue, (DateTime)pickupDate, "Pickup");
+                rent.cr9d3_return_report = CrmRequests.GetPickupReport(service, carName, carValue, (DateTime)handoverDate, "Return");
 
                 service.Create(rent);
             }
@@ -70,7 +74,7 @@ namespace UDS_Module2_D365Client
             return (recordNumber <= 14);         
         }
 
-        private static void CreatePickUpReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
+        private static void CreatePickUpReport(CrmServiceClient service, cr9d3_rent rent, int recordNumber)
         {
             var pickupReport = new cr9d3_cartransferreport
             {
@@ -80,10 +84,10 @@ namespace UDS_Module2_D365Client
             };
 
 
-            cervice.Create(pickupReport);
+            service.Create(pickupReport);
         }
 
-        private static void CreateReturnReport(CrmServiceClient cervice, cr9d3_rent rent, int recordNumber)
+        private static void CreateReturnReport(CrmServiceClient service, cr9d3_rent rent, int recordNumber)
         {
             var returnReport = new cr9d3_cartransferreport
             {
@@ -98,11 +102,7 @@ namespace UDS_Module2_D365Client
                 returnReport.cr9d3_damagedescription = "damage";
             }
 
-            cervice.Create(returnReport);
+            service.Create(returnReport);
         }
-
-
-
-
     }
 }
