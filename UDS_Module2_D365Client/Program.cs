@@ -16,12 +16,12 @@ namespace UDS_Module2_D365Client
     {
         static void Main(string[] args)
         {
-            var maxRecords = 100;
+            var maxRecords = 40000;
             var statusReasonValue = 0;
             var service = new CrmServiceClient(ConfigurationManager.ConnectionStrings["MyCRM"].ConnectionString);
 
-            for (int recordNumber = 0; recordNumber < maxRecords; recordNumber++)
-            {               
+            for (int recordNumber = 10001; recordNumber <= maxRecords; recordNumber++)
+            {              
 
                 cr9d3_rent rent = new cr9d3_rent();
 
@@ -64,7 +64,7 @@ namespace UDS_Module2_D365Client
                 rent.cr9d3_paid = IsNotPaid(statusReason,recordNumber);
 
                 service.Create(rent);
-                Console.WriteLine($"Create record № {recordNumber+1}");
+                Console.WriteLine($"Create record № {recordNumber}");
             }
 
             Console.WriteLine("Done");
@@ -73,7 +73,7 @@ namespace UDS_Module2_D365Client
 
         private static bool StatusCodeIsActive(int recordNumber)
         {
-            return (recordNumber <= 14);         
+            return (recordNumber <= 6000);         
         }
 
         private static void CreatePickUpReport(CrmServiceClient service, cr9d3_rent rent, int recordNumber)
@@ -96,7 +96,7 @@ namespace UDS_Module2_D365Client
                 cr9d3_date = rent.cr9d3_reserved_handover
             };
 
-            if ((recordNumber >= 0) && (recordNumber <= 120))
+            if ((recordNumber >= 20001) && (recordNumber <= 21500))
             {
                 returnReport.cr9d3_damages = true;
                 returnReport.cr9d3_damagedescription = "damage";
@@ -106,17 +106,17 @@ namespace UDS_Module2_D365Client
 
         private static bool IsNotPaid(OptionSetValue statusReasonValue, int recordNumber)
         {
-            if((statusReasonValue.Value == 970300000) && (recordNumber>=4) &&(recordNumber<=7))
+            if((statusReasonValue.Value == 970300000) && (recordNumber >= 2010) &&(recordNumber <= 2209))
             {
                 return false;
             }
 
-            if ((statusReasonValue.Value == 970300001) && (recordNumber >= 10) && (recordNumber <= 12))
+            if ((statusReasonValue.Value == 970300001) && (recordNumber >= 4001) && (recordNumber <= 4002))
             {
                 return false;
             }
 
-            if ((statusReasonValue.Value == 2) && (recordNumber >= 40) && (recordNumber <= 50))
+            if ((statusReasonValue.Value == 2) && (recordNumber >= 10001) && (recordNumber <= 10006))
             {
                 return false;
             }
