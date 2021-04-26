@@ -22,6 +22,7 @@ namespace UDS_Module2_D365Client.Services
                 </filter>
               </entity>
             </fetch>";
+
             var carClassesFromClassList = service.RetrieveMultiple(new FetchExpression(query));
             var randomClassFromClassList = carClassesFromClassList[new Random().Next(0, carClassesFromClassList.Entities.Count)];
             var randomClassFromClassListReference = new EntityReference(randomClassFromClassList.LogicalName, randomClassFromClassList.Id);
@@ -63,6 +64,7 @@ namespace UDS_Module2_D365Client.Services
                     $"</filter>" +
                 $"</entity>" +
             $"</fetch>";
+
             var carsFromClass = service.RetrieveMultiple(new FetchExpression(query));
             var randomCarFromClass = carsFromClass[new Random().Next(0, carsFromClass.Entities.Count)];
             var randomCar = new EntityReference(randomCarFromClass.LogicalName, randomCarFromClass.Id);
@@ -93,22 +95,22 @@ namespace UDS_Module2_D365Client.Services
 
         public static int GetRandomStatusReasonValue(int recordNumber)
         {
-            if (recordNumber <= 4)
+            if (recordNumber <= 2000)
             {
                 return 1;
             }
 
-            if ((recordNumber > 4) && (recordNumber<=9))
+            if ((recordNumber >= 2001 ) && (recordNumber <= 4000))
             {
                 return 970300000;
             }
 
-            if ((recordNumber > 9) && (recordNumber <= 14))
+            if ((recordNumber >= 4001 ) && (recordNumber <= 6000))
             {
                 return 970300001;
             }
 
-            if ((recordNumber > 14) && (recordNumber <= 24))
+            if ((recordNumber >= 6001 ) && (recordNumber <= 10000))
             {
                 return 970300002;
             }
